@@ -20,7 +20,7 @@ def search():
     # get screen_name's tweets
     tweets = helpers.get_user_timeline(screen_name)
 
-    # TODO
+    # analyzing tweets to distribute them into groups(positive, neutral and negative)
     positive, negative, neutral = 0.0, 0.0, 100.0
     analyzer = Analyzer()
     for tweet in tweets:

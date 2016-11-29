@@ -18,12 +18,8 @@ class Analyzer():
                 self.negdata.add(line.rstrip("\n"))
         file.close()
 
-        # TODO
-
     def analyze(self, text):
         """Analyze text for sentiment, returning its score."""
-
-        # TODO
         tokenizer = nltk.tokenize.TweetTokenizer() 
         tokens = tokenizer.tokenize(text.lower())
         score = 0
