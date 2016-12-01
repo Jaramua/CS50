@@ -73,8 +73,7 @@ bool load(const char *dictionary)
     {
         return false;
     }
-  
-
+ 
   while (fscanf(dictionary_file,"%s\n",word) != EOF)
   {
       
@@ -97,8 +96,6 @@ bool load(const char *dictionary)
 	    hashtable[bucket] = new;
     }
   }
-
- 
   return true;
 
 }
@@ -133,10 +130,10 @@ bool unload(void)
       cursor = hashtable[i];
       while (cursor) 
       {
-	        free(cursor->word);
+	    free(cursor->word);
     	    nextcursor  = cursor->next;
     	    free(cursor);
-	        cursor = nextcursor;
+	    cursor = nextcursor;
       }
        
     hashtable[i] = NULL;
