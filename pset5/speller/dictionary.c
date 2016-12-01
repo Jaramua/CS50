@@ -1,125 +1,158 @@
 #include <stdbool.h>
+#include "dictionary.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <ctype.h>
 
-#include "dictionary.h"
-#define HASHTABLE 50
-static unsigned int count = 0;
-int hash(const char* word);
+int hash(const char *word);
 
+char word[LENGTH +1] ;
+int count = 0;
 
-typedef struct node
+typedef struct node 
 {
     char *word;
-    struct node* next;
-} node;
-
-
-
-char word[LENGTH + 1];
+    struct node *next;
+}   node;
+#define HASHTABLE 50
 node *hashtable[HASHTABLE];
 
-/**
+/*
  * Returns true if word is in dictionary else false.
  */
-bool check(const char* word)
+
+bool check(const char *word)
 {
-    
-    node* checker = malloc(sizeof(node));
+    char temp_word[LENGTH +1] = {};
+     node *checker;
+
+    int len = strlen(word);
+
+    for(int i = 0; i < len; i++) 
+    {
+        temp_word[i] = tolower(word[i]);
+    }
+
+    temp_word[len] = '\0';
+		    
     int bucket = hash(word);
     checker = hashtable[bucket];
-
-    while (checker != NULL)
+    if (!checker )
     {
-        if (strcasecmp(checker->word, word) == 0)
+        return false;
+    }    
+
+    while( checker )
+    {
+        if (!strcmp(word,temp_word))
         {
-            return true;
-        }    
+	        return true;
+        }
         checker = checker->next;
     }
-    return false;
+  return false;
 }
 
-/**
+
+/*
  * Loads dictionary into memory.  Returns true if successful else false.
  */
-bool load(const char* dictionary)
+
+bool load(const char *dictionary)
 {
-    
-    FILE* dictionary_file = fopen(dictionary, "r");
-    if (dictionary_file == NULL)
-        return false;
-
-    while (fscanf(dictionary_file, "%s\n", word) != EOF)
+    FILE *dictionary_file = NULL;
+    int bucket;
+  
+    for (int i = 0; i<HASHTABLE; i++)
     {
-        
-        node *new = malloc(sizeof(node));
-        new->word = malloc(strlen(word) + 1);
-        strcpy(new->word, word);
-        int hashed = hash(word);
-
-        if (hashtable[hashed] == NULL)
-        {
-            hashtable[hashed] = new;
-            new->next = NULL;
-        }
-
-        else
-        {
-            new->next = hashtable[hashed];
-            hashtable[hashed] = new;
-        }
-        count++;
+         hashtable[i] = NULL;
     }
-    fclose(dictionary_file);
-    return true;
+
+    if (!(dictionary_file = fopen(dictionary, "r"))) 
+    {
+        return false;
+    }
+  
+
+  while (fscanf(dictionary_file,"%s\n",word) != EOF)
+  {
+      
+    // Insert word into a node
+    node *new = malloc(sizeof(node));
+    new->word = malloc(strlen(word) +1);
+    strcpy(new->word,word);
+    
+    bucket = hash(word);
+
+    count ++;
+    if (hashtable[bucket] == NULL)
+    { 
+	    hashtable[bucket] = new;
+	    new->next = NULL;
+    }
+    else
+    { 
+	    new->next = hashtable[bucket];
+	    hashtable[bucket] = new;
+    }
+  }
+
+ 
+  return true;
+
 }
 
-/**
+
+
+/*
  * Returns number of words in dictionary if loaded else 0 if not yet loaded.
  */
+
 unsigned int size(void)
 {
-    // TODO
     int countResult = count;
-    if (countResult != 0){
+    if (countResult != 0)
+    {
         return countResult;
     }
-    return 0;
+    return 0;    
 }
 
+
+/*
+ * Unloads dictionary from memory.  Returns true if successful else false.
+ */
 
 bool unload(void)
 {
-    // TODO
 
-    for (int i = 0; i < HASHTABLE; i++)
-    {
+  node *nextcursor,*cursor;
+  for (int i = 0; i<HASHTABLE; i++)
+  {
+      cursor = hashtable[i];
+      while (cursor) 
+      {
+	        free(cursor->word);
+    	    nextcursor  = cursor->next;
+    	    free(cursor);
+	        cursor = nextcursor;
+      }
        
-        node *cursor;
-        cursor = hashtable[i];
-
-        while (cursor)
-        {
-            node* tmp = cursor;
-            cursor = cursor->next;
-            free(tmp);
-            return true;
-        }
-        hashtable[i] = NULL;
-    }
-    return false;
+    hashtable[i] = NULL;
+  }
+  return true;
 }
 
-int hash(const char* word)
+
+int hash(const char *word) 
 {
+    int len = strlen(word);
     int index = 0;
-    for (int i = 0; word[i] != '\0'; i++)
+
+    for(int i = 0; i < len; i++) 
     {
-        index += tolower(word[i]);
+          index += word[i];
     }
     return index % HASHTABLE;
 }
