@@ -47,7 +47,7 @@ bool check(const char *word)
     {
         if (!strcmp(word,temp_word))
         {
-	        return true;
+	    return true;
         }
         checker = checker->next;
     }
@@ -76,31 +76,25 @@ bool load(const char *dictionary)
  
   while (fscanf(dictionary_file,"%s\n",word) != EOF)
   {
-      
-    // Insert word into a node
     node *new = malloc(sizeof(node));
     new->word = malloc(strlen(word) +1);
     strcpy(new->word,word);
-    
     bucket = hash(word);
-
     count ++;
     if (hashtable[bucket] == NULL)
     { 
-	    hashtable[bucket] = new;
-	    new->next = NULL;
+	hashtable[bucket] = new;
+	new->next = NULL;
     }
     else
     { 
-	    new->next = hashtable[bucket];
-	    hashtable[bucket] = new;
+	new->next = hashtable[bucket];
+	hashtable[bucket] = new;
     }
   }
   return true;
 
 }
-
-
 
 /*
  * Returns number of words in dictionary if loaded else 0 if not yet loaded.
@@ -116,14 +110,12 @@ unsigned int size(void)
     return 0;    
 }
 
-
 /*
  * Unloads dictionary from memory.  Returns true if successful else false.
  */
 
 bool unload(void)
 {
-
   node *nextcursor,*cursor;
   for (int i = 0; i<HASHTABLE; i++)
   {
