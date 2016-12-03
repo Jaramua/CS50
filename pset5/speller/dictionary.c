@@ -131,10 +131,10 @@ bool unload(void)
       cursor = hashtable[i];
       while (cursor) 
       {
-	        free(cursor->word);
+	    free(cursor->word);
     	    nextcursor  = cursor->next;
     	    free(cursor);
-	        cursor = nextcursor;
+	    cursor = nextcursor;
       }
        
     hashtable[i] = NULL;
