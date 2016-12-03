@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 
 int hash(const char *word);
@@ -10,13 +11,14 @@ int hash(const char *word);
 char word[LENGTH +1] ;
 int count = 0;
 
+// define node structure
 typedef struct node 
 {
     char *word;
     struct node *next;
 }   node;
-#define HASHTABLE 50
-node *hashtable[HASHTABLE];
+#define HASHTABLE_SIZE 50
+node *hashtable[HASHTABLE_SIZE];
 
 /*
  * Returns true if word is in dictionary else false.
@@ -24,18 +26,10 @@ node *hashtable[HASHTABLE];
 
 bool check(const char *word)
 {
-    char temp_word[LENGTH +1] = {};
-     node *checker;
-
-    int len = strlen(word);
-
-    for(int i = 0; i < len; i++) 
-    {
-        temp_word[i] = tolower(word[i]);
-    }
-
-    temp_word[len] = '\0';
-		    
+  
+    node *checker;
+	
+	// detecting in which bucket the word is 	    
     int bucket = hash(word);
     checker = hashtable[bucket];
     if (!checker )
@@ -43,12 +37,13 @@ bool check(const char *word)
         return false;
     }    
 
-    while( checker )
+    while (checker != NULL)
     {
-        if (!strcmp(word,temp_word))
+        // searching in that linked list comparing strings  
+        if (strcasecmp(checker->word, word) == 0)
         {
-	        return true;
-        }
+            return true;
+        }    
         checker = checker->next;
     }
   return false;
@@ -63,22 +58,24 @@ bool load(const char *dictionary)
 {
     FILE *dictionary_file = NULL;
     int bucket;
-  
-    for (int i = 0; i<HASHTABLE; i++)
+    
+    // initializing hash table
+    for (int i = 0; i<HASHTABLE_SIZE; i++)
     {
          hashtable[i] = NULL;
     }
-
+    
+    // opening the dictionnary file for reading 
     if (!(dictionary_file = fopen(dictionary, "r"))) 
     {
         return false;
     }
   
-
+   // iterate through the dictionnary
   while (fscanf(dictionary_file,"%s\n",word) != EOF)
   {
       
-    // Insert word into a node
+    // inserting word into a node
     node *new = malloc(sizeof(node));
     new->word = malloc(strlen(word) +1);
     strcpy(new->word,word);
@@ -92,7 +89,7 @@ bool load(const char *dictionary)
 	    new->next = NULL;
     }
     else
-    { 
+    {   // inserting 'new' into the hash table 
 	    new->next = hashtable[bucket];
 	    hashtable[bucket] = new;
     }
@@ -128,7 +125,8 @@ bool unload(void)
 {
 
   node *nextcursor,*cursor;
-  for (int i = 0; i<HASHTABLE; i++)
+  // free nodes for each bucket
+  for (int i = 0; i<HASHTABLE_SIZE; i++)
   {
       cursor = hashtable[i];
       while (cursor) 
@@ -147,12 +145,11 @@ bool unload(void)
 
 int hash(const char *word) 
 {
-    int len = strlen(word);
+    // the hash function indicates to which bucket the word belongs to
     int index = 0;
-
-    for(int i = 0; i < len; i++) 
+    for (int i = 0; word[i] != '\0'; i++)
     {
-          index += word[i];
-    }
-    return index % HASHTABLE;
+        index += tolower(word[i]);
+    }    
+    return index % HASHTABLE_SIZE;
 }
