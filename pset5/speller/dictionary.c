@@ -26,10 +26,8 @@ node *hashtable[HASHTABLE_SIZE];
 
 bool check(const char *word)
 {
-  
     node *checker;
-	
-	// detecting in which bucket the word is 	    
+    // detecting in which bucket the word is 	    
     int bucket = hash(word);
     checker = hashtable[bucket];
     if (!checker )
@@ -94,10 +92,7 @@ bool load(const char *dictionary)
 	    hashtable[bucket] = new;
     }
   }
-
- 
   return true;
-
 }
 
 
